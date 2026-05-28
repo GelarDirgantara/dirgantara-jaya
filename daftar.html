@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pendaftaran Kursus - Dirgantara Jaya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --green-dark:#1a3d2b; --green-mid:#2d6a4f; --green-light:#e8f5ee;
+      --yellow:#f5b800; --white:#fff; --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb; --gray-400:#9ca3af; --gray-600:#4b5563;
+      --gray-800:#1f2937; --red:#e53935; --radius:12px; --radius-sm:8px;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Plus Jakarta Sans',sans-serif; background:linear-gradient(135deg,#1a3d2b 0%,#2d6a4f 50%,#1a3d2b 100%); min-height:100vh; padding:20px; }
+    .page-wrap { max-width:640px; margin:0 auto; }
+
+    /* HEADER */
+    .daftar-header { text-align:center; padding:28px 20px 20px; color:white; }
+    .daftar-header img { width:90px; height:90px; border-radius:50%; border:3px solid var(--yellow); object-fit:cover; margin-bottom:14px; }
+    .daftar-header h1 { font-size:22px; font-weight:800; letter-spacing:1px; }
+    .daftar-header p { font-size:12px; opacity:.75; margin-top:4px; }
+    .daftar-header .badge-open { display:inline-block; background:var(--yellow); color:var(--green-dark); font-size:11px; font-weight:700; padding:3px 12px; border-radius:20px; margin-top:8px; }
+
+    /* CARD */
+    .daftar-card { background:white; border-radius:var(--radius); overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+    .card-header { background:var(--green-dark); padding:16px 20px; display:flex; align-items:center; gap:10px; }
+    .card-header h2 { color:white; font-size:16px; font-weight:700; }
+    .card-header i { color:var(--yellow); font-size:18px; }
+    .card-body { padding:22px 20px; }
+
+    /* STEPS */
+    .steps { display:flex; gap:0; margin-bottom:24px; }
+    .step { flex:1; text-align:center; position:relative; }
+    .step::after { content:''; position:absolute; top:16px; left:50%; width:100%; height:2px; background:var(--gray-200); z-index:0; }
+    .step:last-child::after { display:none; }
+    .step-circle { width:32px; height:32px; border-radius:50%; background:var(--gray-200); color:var(--gray-400); font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; margin:0 auto 6px; position:relative; z-index:1; transition:all .3s; }
+    .step.active .step-circle { background:var(--green-dark); color:white; }
+    .step.done .step-circle { background:var(--green-mid); color:white; }
+    .step-label { font-size:10px; color:var(--gray-400); font-weight:600; }
+    .step.active .step-label { color:var(--green-dark); }
+
+    /* FORM */
+    .form-section { display:none; }
+    .form-section.active { display:block; }
+    .form-group { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+    .form-group label { font-size:12px; font-weight:600; color:var(--gray-600); }
+    .form-group label span.req { color:var(--red); }
+    .form-group input, .form-group select, .form-group textarea {
+      padding:10px 12px; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm);
+      font-family:inherit; font-size:13px; color:var(--gray-800); outline:none; transition:border .2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(45,106,79,.1); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .paket-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; }
+    .paket-option { border:2px solid var(--gray-200); border-radius:var(--radius-sm); padding:10px 12px; cursor:pointer; transition:all .2s; }
+    .paket-option:hover { border-color:var(--green-mid); background:var(--green-light); }
+    .paket-option.selected { border-color:var(--green-dark); background:var(--green-light); }
+    .paket-option input { display:none; }
+    .paket-option-name { font-size:13px; font-weight:700; color:var(--gray-800); }
+    .paket-option-price { font-size:12px; color:var(--green-mid); font-weight:600; margin-top:2px; }
+    .paket-option-detail { font-size:10px; color:var(--gray-400); margin-top:2px; }
+
+    /* TRANSMISI */
+    .transmisi-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .transmisi-btn { border:2px solid var(--gray-200); border-radius:var(--radius-sm); padding:14px; text-align:center; cursor:pointer; transition:all .2s; }
+    .transmisi-btn:hover { border-color:var(--green-mid); background:var(--green-light); }
+    .transmisi-btn.selected { border-color:var(--green-dark); background:var(--green-light); }
+    .transmisi-btn i { font-size:24px; color:var(--green-mid); display:block; margin-bottom:6px; }
+    .transmisi-btn strong { font-size:14px; color:var(--gray-800); display:block; }
+    .transmisi-btn span { font-size:11px; color:var(--gray-400); }
+
+    /* BUTTONS */
+    .btn-next { width:100%; padding:12px; background:var(--green-dark); color:white; border:none; border-radius:var(--radius-sm); font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; margin-top:16px; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .2s; }
+    .btn-next:hover { background:var(--green-mid); }
+    .btn-back { background:none; border:none; color:var(--gray-400); font-family:inherit; font-size:13px; cursor:pointer; padding:8px 0; display:flex; align-items:center; gap:5px; margin-bottom:12px; }
+    .btn-back:hover { color:var(--gray-600); }
+
+    /* RINGKASAN */
+    .ringkasan-box { background:var(--green-light); border:1.5px solid var(--green-mid); border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:14px; }
+    .ringkasan-row { display:flex; justify-content:space-between; padding:5px 0; font-size:13px; border-bottom:1px solid rgba(0,0,0,.06); }
+    .ringkasan-row:last-child { border-bottom:none; }
+    .ringkasan-row span:first-child { color:var(--gray-600); }
+    .ringkasan-row span:last-child { font-weight:700; color:var(--gray-800); }
+
+    /* SUKSES */
+    .sukses-box { text-align:center; padding:24px 16px; }
+    .sukses-icon { width:72px; height:72px; background:#dcfce7; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:32px; color:#166534; }
+    .sukses-box h2 { font-size:20px; font-weight:800; color:var(--green-dark); margin-bottom:8px; }
+    .login-info-box { background:var(--green-dark); color:white; border-radius:var(--radius-sm); padding:16px; margin:16px 0; text-align:left; }
+    .login-info-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.1); font-size:13px; }
+    .login-info-row:last-child { border-bottom:none; }
+    .login-info-row span:first-child { opacity:.7; }
+    .login-info-row strong { color:var(--yellow); }
+    .btn-login-now { display:block; width:100%; padding:12px; background:var(--yellow); color:var(--green-dark); border:none; border-radius:var(--radius-sm); font-family:inherit; font-size:14px; font-weight:800; cursor:pointer; text-decoration:none; text-align:center; margin-top:12px; }
+
+    /* NOTES */
+    .note-box { background:var(--gray-100); border-radius:var(--radius-sm); padding:10px 14px; font-size:12px; color:var(--gray-600); margin-top:12px; line-height:1.7; }
+    .error-msg { background:#fee2e2; color:#991b1b; padding:10px 13px; border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-top:10px; display:none; }
+    .loading { opacity:.6; pointer-events:none; }
+    @media(max-width:480px) { .form-row { grid-template-columns:1fr; } .paket-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+  <div class="daftar-header">
+    <img src="logo.png" alt="Logo Dirgantara Jaya" onerror="this.style.display='none'"/>
+    <h1>DIRGANTARA JAYA</h1>
+    <p>Kursus Mengemudi Profesional • Jl. Akses UI, Kelapa Dua Depok</p>
+    <span class="badge-open">📋 Form Pendaftaran Online</span>
+  </div>
+
+  <div class="daftar-card">
+    <div class="card-header">
+      <i class="fas fa-user-plus"></i>
+      <h2>Formulir Pendaftaran Kursus</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- STEPS -->
+      <div class="steps">
+        <div class="step active" id="step1"><div class="step-circle">1</div><div class="step-label">Data Diri</div></div>
+        <div class="step" id="step2"><div class="step-circle">2</div><div class="step-label">Pilih Paket</div></div>
+        <div class="step" id="step3"><div class="step-circle">3</div><div class="step-label">Konfirmasi</div></div>
+      </div>
+
+      <!-- SECTION 1: DATA DIRI -->
+      <div class="form-section active" id="sec1">
+        <div class="form-group">
+          <label>Nama Lengkap <span class="req">*</span></label>
+          <input type="text" id="fNama" placeholder="Nama sesuai KTP"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>No. HP / WhatsApp <span class="req">*</span> <small style="font-weight:400;color:#9ca3af">(username login)</small></label>
+            <input type="tel" id="fHP" placeholder="08xxxxxxxxxx"/>
+          </div>
+          <div class="form-group">
+            <label>Tanggal Lahir <span class="req">*</span> <small style="font-weight:400;color:#9ca3af">(password login)</small></label>
+            <input type="date" id="fTglLahir"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Alamat Lengkap</label>
+          <input type="text" id="fAlamat" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan"/>
+        </div>
+        <div class="form-group">
+          <label>Jenis Kelamin</label>
+          <select id="fJK">
+            <option value="">-- Pilih --</option>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Apakah pernah bisa mengemudi sebelumnya?</label>
+          <select id="fPengalaman">
+            <option value="Belum pernah sama sekali">Belum pernah sama sekali</option>
+            <option value="Pernah sedikit tapi belum lancar">Pernah sedikit tapi belum lancar</option>
+            <option value="Sudah bisa tapi ingin lebih mahir">Sudah bisa tapi ingin lebih mahir</option>
+          </select>
+        </div>
+        <div id="errSec1" class="error-msg"></div>
+        <button class="btn-next" onclick="nextStep(1)">
+          Lanjut Pilih Paket <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- SECTION 2: PILIH PAKET -->
+      <div class="form-section" id="sec2">
+        <button class="btn-back" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Kembali</button>
+        <div class="form-group">
+          <label>Pilih Jenis Transmisi <span class="req">*</span></label>
+          <div class="transmisi-btns">
+            <div class="transmisi-btn" id="tbManual" onclick="pilihTransmisi('Manual')">
+              <i class="fas fa-gear"></i>
+              <strong>Manual (M)</strong>
+              <span>Sigra Manual</span>
+            </div>
+            <div class="transmisi-btn" id="tbMatic" onclick="pilihTransmisi('Matic')">
+              <i class="fas fa-sliders"></i>
+              <strong>Matic (AT)</strong>
+              <span>Sigra Matic</span>
+            </div>
+          </div>
+        </div>
+        <div id="paketSection" style="display:none">
+          <div class="form-group">
+            <label>Pilih Paket Kursus <span class="req">*</span></label>
+            <div class="paket-grid" id="paketGrid"></div>
+          </div>
+        </div>
+        <div id="dpSection" style="display:none">
+          <div class="form-group">
+            <label>Uang Muka / DP (Rp) <small style="font-weight:400;color:#9ca3af">— opsional</small></label>
+            <input type="number" id="fDP" placeholder="0" min="0"/>
+          </div>
+        </div>
+        <div id="errSec2" class="error-msg"></div>
+        <button class="btn-next" id="btnLanjutPaket" onclick="nextStep(2)" style="display:none">
+          Lanjut Konfirmasi <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- SECTION 3: KONFIRMASI -->
+      <div class="form-section" id="sec3">
+        <button class="btn-back" onclick="prevStep(3)"><i class="fas fa-arrow-left"></i> Kembali</button>
+        <h3 style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:12px"><i class="fas fa-clipboard-check"></i> Ringkasan Pendaftaran</h3>
+        <div class="ringkasan-box" id="ringkasanBox"></div>
+        <div class="note-box">
+          <i class="fas fa-info-circle"></i>
+          <strong>Informasi Login:</strong><br>
+          • Username: <strong>No HP kamu</strong><br>
+          • Password: <strong>Tanggal lahir format ddmmyyyy</strong><br>
+          • Simpan informasi ini baik-baik!<br><br>
+          <i class="fas fa-exclamation-triangle" style="color:#854d0e"></i>
+          Biaya di atas belum termasuk tips instruktur. Masa tunggu latihan maks 3 bulan dari pendaftaran.
+        </div>
+        <div id="errSec3" class="error-msg"></div>
+        <button class="btn-next" onclick="submitDaftar()" id="btnSubmit">
+          <i class="fas fa-paper-plane"></i> Daftar Sekarang!
+        </button>
+      </div>
+
+      <!-- SECTION 4: SUKSES -->
+      <div class="form-section" id="sec4">
+        <div class="sukses-box">
+          <div class="sukses-icon"><i class="fas fa-check"></i></div>
+          <h2>Pendaftaran Berhasil! 🎉</h2>
+          <p style="font-size:13px;color:var(--gray-600)">Selamat datang di Dirgantara Jaya! Akun kamu sudah aktif.</p>
+          <div class="login-info-box">
+            <p style="font-size:12px;opacity:.7;margin-bottom:10px;text-align:center">INFORMASI LOGIN KAMU</p>
+            <div class="login-info-row"><span>Username</span><strong id="sukNama">-</strong></div>
+            <div class="login-info-row"><span>No HP (username)</span><strong id="sukHP">-</strong></div>
+            <div class="login-info-row"><span>Password</span><strong id="sukPass">-</strong></div>
+            <div class="login-info-row"><span>Paket</span><strong id="sukPaket">-</strong></div>
+            <div class="login-info-row"><span>Total Biaya</span><strong id="sukBiaya">-</strong></div>
+          </div>
+          <p style="font-size:12px;color:var(--gray-600);margin-bottom:8px">📸 Screenshot halaman ini sebagai bukti pendaftaran</p>
+          <a href="index.html" class="btn-login-now">
+            <i class="fas fa-sign-in-alt"></i> Login ke Aplikasi Sekarang
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <p style="text-align:center;color:rgba(255,255,255,.5);font-size:11px;margin-top:16px">
+    © Dirgantara Jaya • (021) 87752889 • 0812-8168-0117
+  </p>
+</div>
+
+<script type="module">
+import { db, collection, addDoc, getDocs, query, where } from './firebase-config.js';
+
+const PAKET = {
+  Manual:  { '7x':{p:7,h:620000},'8x':{p:8,h:710000},'9x':{p:9,h:780000},'10x':{p:10,h:840000},'Trampil':{p:20,h:1630000},'Melancarkan':{p:4,h:375000},'Rental':{p:1,h:115000} },
+  Matic:   { '7x':{p:7,h:720000},'8x':{p:8,h:790000},'9x':{p:9,h:870000},'10x':{p:10,h:920000},'Trampil':{p:20,h:1780000},'Melancarkan':{p:4,h:495000},'Rental':{p:1,h:130000} }
+};
+const PAKET_LABELS = {'7x':'7x Pertemuan','8x':'8x Pertemuan','9x':'9x Pertemuan','10x':'10x Pertemuan','Trampil':'Trampil 1 (20x)','Melancarkan':'Melancarkan (4x)','Rental':'Rental (1x)'};
+const JAM_PER = {'7x':1,'8x':1,'9x':1,'10x':1,'Trampil':2,'Melancarkan':1,'Rental':1};
+
+let state = { transmisi:null, paketKey:null, harga:0, pertemuan:0 };
+let currentStep = 1;
+
+function rp(n) { return 'Rp '+Number(n||0).toLocaleString('id-ID'); }
+function today() { return new Date().toISOString().split('T')[0]; }
+
+window.pilihTransmisi = function(t) {
+  state.transmisi = t;
+  state.paketKey = null;
+  document.getElementById('tbManual').classList.toggle('selected', t==='Manual');
+  document.getElementById('tbMatic').classList.toggle('selected', t==='Matic');
+  document.getElementById('paketSection').style.display='block';
+  document.getElementById('dpSection').style.display='none';
+  document.getElementById('btnLanjutPaket').style.display='none';
+
+  const grid = document.getElementById('paketGrid');
+  const pakets = PAKET[t];
+  grid.innerHTML = Object.entries(pakets).map(([k,v])=>`
+    <div class="paket-option" id="po_${k}" onclick="pilihPaket('${k}',${v.h},${v.p})">
+      <div class="paket-option-name">${PAKET_LABELS[k]}</div>
+      <div class="paket-option-price">${rp(v.h)}</div>
+      <div class="paket-option-detail">${v.p}x pertemuan • ${JAM_PER[k]} jam/sesi</div>
+    </div>`).join('');
+};
+
+window.pilihPaket = function(k,h,p) {
+  state.paketKey=k; state.harga=h; state.pertemuan=p;
+  document.querySelectorAll('.paket-option').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('po_'+k).classList.add('selected');
+  document.getElementById('dpSection').style.display='block';
+  document.getElementById('btnLanjutPaket').style.display='flex';
+};
+
+window.nextStep = function(from) {
+  if (from===1) {
+    const nama=document.getElementById('fNama').value.trim();
+    const hp=document.getElementById('fHP').value.trim();
+    const tgl=document.getElementById('fTglLahir').value;
+    const err=document.getElementById('errSec1');
+    if (!nama||!hp||!tgl) { err.textContent='Nama, No HP, dan Tanggal Lahir wajib diisi!'; err.style.display='block'; return; }
+    if (!/^08\d{8,11}$/.test(hp)) { err.textContent='Format No HP tidak valid! Contoh: 08123456789'; err.style.display='block'; return; }
+    err.style.display='none';
+  }
+  if (from===2) {
+    const err=document.getElementById('errSec2');
+    if (!state.transmisi||!state.paketKey) { err.textContent='Pilih transmisi dan paket terlebih dahulu!'; err.style.display='block'; return; }
+    err.style.display='none';
+    buildRingkasan();
+  }
+  document.getElementById('sec'+from).classList.remove('active');
+  document.getElementById('sec'+(from+1)).classList.add('active');
+  document.getElementById('step'+from).classList.remove('active'); document.getElementById('step'+from).classList.add('done');
+  document.getElementById('step'+(from+1))?.classList.add('active');
+  currentStep=from+1;
+};
+
+window.prevStep = function(from) {
+  document.getElementById('sec'+from).classList.remove('active');
+  document.getElementById('sec'+(from-1)).classList.add('active');
+  document.getElementById('step'+from).classList.remove('active','done');
+  document.getElementById('step'+(from-1)).classList.remove('done'); document.getElementById('step'+(from-1)).classList.add('active');
+  currentStep=from-1;
+};
+
+function buildRingkasan() {
+  const nama=document.getElementById('fNama').value.trim();
+  const hp=document.getElementById('fHP').value.trim();
+  const tgl=document.getElementById('fTglLahir').value;
+  const dp=Number(document.getElementById('fDP').value)||0;
+  const paketLabel=`${PAKET_LABELS[state.paketKey]} - ${state.transmisi}`;
+  const pass=tgl.split('-').reverse().join('');
+  document.getElementById('ringkasanBox').innerHTML=`
+    <div class="ringkasan-row"><span>Nama</span><span>${nama}</span></div>
+    <div class="ringkasan-row"><span>No HP</span><span>${hp}</span></div>
+    <div class="ringkasan-row"><span>Tanggal Lahir</span><span>${new Date(tgl).toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})}</span></div>
+    <div class="ringkasan-row"><span>Transmisi</span><span>${state.transmisi}</span></div>
+    <div class="ringkasan-row"><span>Paket</span><span>${paketLabel}</span></div>
+    <div class="ringkasan-row"><span>Pertemuan</span><span>${state.pertemuan}x (${JAM_PER[state.paketKey]} jam/sesi)</span></div>
+    <div class="ringkasan-row"><span>Total Biaya</span><span style="color:#1a3d2b;font-size:15px">${rp(state.harga)}</span></div>
+    <div class="ringkasan-row"><span>DP</span><span>${rp(dp)}</span></div>
+    <div class="ringkasan-row"><span>Sisa Bayar</span><span style="color:#991b1b">${rp(state.harga-dp)}</span></div>
+  `;
+}
+
+window.submitDaftar = async function() {
+  const btn=document.getElementById('btnSubmit');
+  const err=document.getElementById('errSec3');
+  const nama=document.getElementById('fNama').value.trim();
+  const hp=document.getElementById('fHP').value.trim();
+  const tglLahir=document.getElementById('fTglLahir').value;
+  const alamat=document.getElementById('fAlamat').value.trim();
+  const jk=document.getElementById('fJK').value;
+  const pengalaman=document.getElementById('fPengalaman').value;
+  const dp=Number(document.getElementById('fDP').value)||0;
+  const paketKey=`${state.transmisi}-${state.paketKey}`;
+  const paketLabel=`${PAKET_LABELS[state.paketKey]} - ${state.transmisi}`;
+
+  btn.classList.add('loading');
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+  try {
+    // Cek HP sudah terdaftar?
+    const cek=await getDocs(query(collection(db,'siswa'),where('hp','==',hp)));
+    if (!cek.empty) {
+      err.textContent='No HP ini sudah terdaftar! Silakan login atau hubungi admin.';
+      err.style.display='block';
+      btn.classList.remove('loading');
+      btn.innerHTML='<i class="fas fa-paper-plane"></i> Daftar Sekarang!';
+      return;
+    }
+
+    await addDoc(collection(db,'siswa'),{
+      nama, hp, tglLahir, alamat, jk, pengalaman,
+      paketKey, paketLabel,
+      transmisi: state.transmisi,
+      totalPertemuan: state.pertemuan,
+      jamPerSesi: JAM_PER[state.paketKey],
+      biaya: state.harga,
+      terbayar: dp,
+      tglDaftar: today(),
+      absen: [],
+      daftarMandiri: true
+    });
+
+    // Tampilkan sukses
+    document.getElementById('sec3').classList.remove('active');
+    document.getElementById('sec4').classList.add('active');
+    document.getElementById('step3').classList.remove('active'); document.getElementById('step3').classList.add('done');
+    document.getElementById('sukNama').textContent=nama;
+    document.getElementById('sukHP').textContent=hp;
+    document.getElementById('sukPass').textContent=tglLahir.split('-').reverse().join('');
+    document.getElementById('sukPaket').textContent=paketLabel;
+    document.getElementById('sukBiaya').textContent=rp(state.harga);
+  } catch(e) {
+    err.textContent='Gagal menyimpan: '+e.message;
+    err.style.display='block';
+    btn.classList.remove('loading');
+    btn.innerHTML='<i class="fas fa-paper-plane"></i> Daftar Sekarang!';
+  }
+};
+</script>
+</body>
+</html>
